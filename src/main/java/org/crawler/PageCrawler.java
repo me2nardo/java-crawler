@@ -3,6 +3,8 @@ package org.crawler;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author vitalii.levash
@@ -32,7 +34,7 @@ public class PageCrawler {
         this.barrier = barrier;
     }
 
-    public void start() throws InterruptedException {
+    public void start() throws InterruptedException, BrokenBarrierException {
         String next = null;
         executorService = Executors.newCachedThreadPool();
         while(!link.isEmpty()){
@@ -49,6 +51,18 @@ public class PageCrawler {
 
             CrawlerJob job = new CrawlerJob(next,this);
             executorService.submit(job);
+
+            if (link.isEmpty()){
+                barrier.await();
+            }
+
+            executorService.shutdown();
+            try {
+
+                executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            } catch (InterruptedException ex) {
+              //
+                }
         }
     }
 
