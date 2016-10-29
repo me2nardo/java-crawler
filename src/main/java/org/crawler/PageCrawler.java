@@ -34,6 +34,8 @@ public class PageCrawler {
         this.barrier = barrier;
     }
 
+
+
     public void start() throws InterruptedException, BrokenBarrierException {
         String next = null;
         executorService = Executors.newCachedThreadPool();
@@ -44,7 +46,7 @@ public class PageCrawler {
                 System.out.println("Queue is empty");
             }
 
-            if (!checkUrl(next)) continue;
+            if (!checkUrlContain(next)) continue;
 
             result.add(next);
             System.out.println(next);
@@ -66,7 +68,7 @@ public class PageCrawler {
         }
     }
 
-    private boolean checkUrl(String nextUrl) {
+    private boolean checkUrlContain(String nextUrl) {
 
         if(result.contains(nextUrl)) { return false; }
         if(nextUrl.startsWith("javascript:"))  { return false; }

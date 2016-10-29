@@ -1,6 +1,7 @@
 package org.crawler;
 
 
+import org.crawler.util.UrlUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -24,11 +25,12 @@ public class CrawlerJob implements Runnable{
     public void run() {
         try {
             Document doc = Jsoup.connect(url).get();
-            Elements links =doc.getElementsByTag("a");
-
-            links.parallelStream()
+            Elements links = doc.getElementsByTag("a");
+            String base = doc.baseUri();
+            links
                     .forEach(link-> {
-                        pageCrawler.addUrl(link.attr("href"));
+                        pageCrawler.addUrl(UrlUtils.normalize(link.attr("href"),base));
+
                         System.out.println("-"+link.attr("href"));
                     });
              if (pageCrawler.getBarrier().getNumberWaiting()==1){
